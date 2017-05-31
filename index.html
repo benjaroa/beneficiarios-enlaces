@@ -244,14 +244,21 @@ $(function() {
 							// ahora las columnas
 							for (h = 0; h < res.raw.table.rows[i].c.length; h++){
 								
+								// si la celda viene vacía
 								if(res.raw.table.rows[i].c[h] == null){
 									val = ""; 
 								}else{
 									val = res.raw.table.rows[i].c[h].v
 								}
 								
-								if( isNaN(val) ){ val = '\"'+ val +'\"'; }
+								// Si es texto, parseo
+								if( isNaN(val) ){
+									val = '\"'+ val +'\"';
+									val = val.replace(/\n\r/g,"<br />");
+									val = val.replace(/\n/g,"<br />");
+								}
 								
+								// lo guardo
 								datos += val;
 								
 								if(h < res.raw.table.rows[i].c.length-1){ datos += ","; }
