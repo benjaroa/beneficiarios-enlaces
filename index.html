@@ -408,12 +408,13 @@ $(function() {
 				}
 			}
 		}
-		console.log(proyectos);
-		//console.log(JSON.stringify(proyectos));
+		//console.log(proyectos);
+		console.log(JSON.stringify(proyectos));
 
 		// Se imprime
 		$("#render_proyectos").remove();
-		if(mdata[0].RBD != undefined){
+		// chequeo si hay proyectos y imprimo
+		if(proyectos[0].Proyecto != undefined){
 			$("#output").append('<h1>Proyectos</h1><div class="row" id="render_proyectos"></div>');
 			var source = $("#fichaProyecto").html();
 			var template = Handlebars.compile(source);
