@@ -257,6 +257,7 @@ $(function() {
 						alasql.promise(insert)
 							.then(function(response){
 								cuenta++;
+								console.log (insert);
 								console.log("✔ Data para tabla "+url[j][0]+ " cargada" );
 								// Intento cerrar el modal
 								IniciarApp(cuenta,url.length);
