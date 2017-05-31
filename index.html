@@ -261,7 +261,6 @@ $(function() {
 							insert += ")";
 							if(i < res.raw.table.rows.length-1){ insert += ","; }
 						}
-						console.log(insert);
 
 						// Inserto los datos
 						alasql.promise(insert)
@@ -273,6 +272,7 @@ $(function() {
 							}).catch(function(err){
 								// error?
 								console.log(err);
+								console.log(insert);
 							});
 					}
 				}
