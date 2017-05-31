@@ -243,9 +243,17 @@ $(function() {
 
 							// ahora las columnas
 							for (h = 0; h < res.raw.table.rows[i].c.length; h++){
-								if(res.raw.table.rows[i].c[h] == null){ val = ""; }else{ val = res.raw.table.rows[i].c[h].v}
+								
+								if(res.raw.table.rows[i].c[h] == null){
+									val = ""; 
+								}else{
+									val = res.raw.table.rows[i].c[h].v
+								}
+								
 								if( isNaN(val) ){ val = '\"'+ val +'\"'; }
+								
 								datos += val;
+								
 								if(h < res.raw.table.rows[i].c.length-1){ datos += ","; }
 							}
 
@@ -253,11 +261,12 @@ $(function() {
 							insert += ")";
 							if(i < res.raw.table.rows.length-1){ insert += ","; }
 						}
+						console.log(insert);
+
 						// Inserto los datos
 						alasql.promise(insert)
 							.then(function(response){
 								cuenta++;
-								console.log (insert);
 								console.log("✔ Data para tabla "+url[j][0]+ " cargada" );
 								// Intento cerrar el modal
 								IniciarApp(cuenta,url.length);
@@ -329,13 +338,6 @@ $(function() {
 		//////
 
 		// Segunda consulta: Proyecto y Seleccion
-		/*var sql = alasql("SELECT p.Proyecto, p.Sigla_Proyecto, ARRAY({Anho_Convocatoria:p.Anho_Convocatoria, EE_Invitados:p.EE_Invitados,EE_Seleccionados:p.EE_Seleccionados, Descripcion_Beneficio:p.Descripcion_Beneficio}) AS convocatorias \
-						FROM seleccion b \
-						OUTER JOIN proyectos p ON \
-							b.Sigla_Proyecto = p.Sigla_Proyecto AND \
-							b.Anho_Convocatoria = p.Anho_Convocatoria \
-						WHERE b.RBD = 1 GROUP BY p.Proyecto, p.Sigla_Proyecto");*/
-
 		var proyectos = alasql("\
 			SELECT \
 				p.Proyecto, \
@@ -359,18 +361,6 @@ $(function() {
 				p.Sigla_Proyecto\
 		");
 		console.log(proyectos);
-
-		//
-		// HAY QUE HACER QUE SEA SECUENCIAL, como la consulta
-		//
-
-		/*var sqlbig = alasql("SELECT p.Proyecto, p.Sigla_Proyecto, ARRAY({Anho_Convocatoria:p.Anho_Convocatoria, EE_Invitados:p.EE_Invitados,EE_Seleccionados:p.EE_Seleccionados, Descripcion_Beneficio:p.Descripcion_Beneficio, ARRAY({Clave:m.Clave,Valor:m.Valor}) as [metadata] }) AS convocatorias}) AS convocatorias \
-			FROM seleccion b, proyectos p, metadata m \
-			WHERE \
-				b.Sigla_Proyecto = p.Sigla_Proyecto AND b.Sigla_Proyecto = m.Sigla_Proyecto AND \
-				b.Anho_Convocatoria = p.Anho_Convocatoria AND b.Anho_Convocatoria = m.Anho_Convocatoria AND \
-				b.RBD = 1 \
-			GROUP BY p.Proyecto, p.Sigla_Proyecto");*/
 
 		// Tercera consulta: Metadata
 		var mdata = alasql("\
@@ -396,15 +386,7 @@ $(function() {
 				m.Anho_Convocatoria \
 		");
 
-		// alasql("SELECT p.*,s.* FROM seleccion b, proyectos p WHERE b.Sigla_Proyecto = p.Sigla_Proyecto AND b.Anho_Convocatoria = p.Anho_Convocatoria AND b.RBD = 1");
-		
-		//alasql("SELECT p.Proyecto, p.Sigla_Proyecto, FROM seleccion b OUTER JOIN proyectos c ON b.Sigla_Proyecto = c.Sigla_Proyecto and b.Anho_Convocatoria = c.Anho_Convocatoria OUTER JOIN metadata d ON b.RBD = d.RBD and c.Sigla_Proyecto = b.Sigla_Proyecto and c.Anho_Convocatoria = d.Anho_Convocatoria and b.Sigla_Proyecto = d.Sigla_Proyecto WHERE b.RBD = 1 GROUP BY b.Sigla_Proyecto");
-		
-		//alasql("SELECT p.Proyecto, p.Sigla_Proyecto, ARRAY(SELECT p.Anho_Convocatoria, p.Descripcion_Beneficio, p.EE_Invitados, p.EE_Seleccionados FROM seleccion b OUTER JOIN proyectos p ON b.Sigla_Proyecto = p.Sigla_Proyecto and b.Anho_Convocatoria = p.Anho_Convocatoria WHERE b.RBD = 1) as convocatorias FROM seleccion b OUTER JOIN proyectos p ON b.Sigla_Proyecto = p.Sigla_Proyecto and b.Anho_Convocatoria = p.Anho_Convocatoria WHERE b.RBD = 1 GROUP BY b.Sigla_Proyecto");
-
-		//var data_Proyectos_EE = alasql('SELECT * FROM phases q WHERE (SELECT COUNT(*) \
-        //				FROM phases t WHERE t.Phase = q.Phase) = 2');
-		
+		// Junto ambas consultas en un sólo objeto
 		if(mdata[0].RBD != undefined){
 			for(i=0;i<proyectos.length;i++){
 				for(j=0;j<proyectos[i].convocatorias.length;j++){
@@ -420,17 +402,20 @@ $(function() {
 		}
 		//console.log(proyectos);
 		//console.log(JSON.stringify(proyectos));
+
+		// Se imprime
 		$("#render_proyectos").remove();
 		$("#output").append('<h1>Proyectos</h1><div class="row" id="render_proyectos"></div>');
-		var source   = $("#fichaProyecto").html();
+		var source = $("#fichaProyecto").html();
 		var template = Handlebars.compile(source);
 		for(i=0;i<proyectos.length;i++){
-			var html    = template(proyectos[i]);
+			var html = template(proyectos[i]);
 			$("#render_proyectos").append(html);
 		}
 		// escondo el panel de búsqueda
 		$("#consultaBlock").collapse('hide');
 	});
+	// ! Consulta por RBD
 
 	// Formularios
 	$("#formConsulta").submit( function(e){ 
