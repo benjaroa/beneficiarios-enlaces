@@ -254,6 +254,7 @@ $(function() {
 								// Si es texto, parseo
 								if( isNaN(val) ){
 									val = '\"'+ val +'\"';
+									// esto quizá podría hacerse mejor
 									val = val.replace(/\n\r/g,"<br />");
 									val = val.replace(/\n/g,"<br />");
 								}
@@ -412,12 +413,14 @@ $(function() {
 
 		// Se imprime
 		$("#render_proyectos").remove();
-		$("#output").append('<h1>Proyectos</h1><div class="row" id="render_proyectos"></div>');
-		var source = $("#fichaProyecto").html();
-		var template = Handlebars.compile(source);
-		for(i=0;i<proyectos.length;i++){
-			var html = template(proyectos[i]);
-			$("#render_proyectos").append(html);
+		if(mdata[0].RBD != undefined){
+			$("#output").append('<h1>Proyectos</h1><div class="row" id="render_proyectos"></div>');
+			var source = $("#fichaProyecto").html();
+			var template = Handlebars.compile(source);
+			for(i=0;i<proyectos.length;i++){
+				var html = template(proyectos[i]);
+				$("#render_proyectos").append(html);
+			}
 		}
 		// escondo el panel de búsqueda
 		$("#consultaBlock").collapse('hide');
