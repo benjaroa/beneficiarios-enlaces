@@ -368,7 +368,7 @@ $(function() {
 				p.Proyecto, \
 				p.Sigla_Proyecto\
 		");
-		console.log(proyectos);
+		//console.log(proyectos);
 
 		// Tercera consulta: Metadata
 		var mdata = alasql("\
@@ -394,7 +394,7 @@ $(function() {
 				m.Anho_Convocatoria \
 		");
 
-		// Junto ambas consultas en un sólo objeto
+		// Junto ambas consultas en un sólo objeto (sólo si hay metadata)
 		if(mdata[0].RBD != undefined){
 			for(i=0;i<proyectos.length;i++){
 				for(j=0;j<proyectos[i].convocatorias.length;j++){
@@ -409,13 +409,13 @@ $(function() {
 			}
 		}
 		//console.log(proyectos);
-		console.log(JSON.stringify(proyectos));
+		//console.log(JSON.stringify(proyectos));
 
 		// Se imprime
 		$("#render_proyectos").remove();
 		// chequeo si hay proyectos y imprimo
 		if(proyectos[0].Proyecto != undefined){
-			$("#output").append('<h1>Proyectos</h1><div class="row" id="render_proyectos"></div>');
+			$("#output").append('<h1>Proyectos <div class="btn-group float-right" role="group" aria-label="vista"><button type="button" class="btn btn-secondary active"><i class="fa fa-th" aria-hidden="true"></i></button><button type="button" class="btn btn-secondary"><i class="fa fa-table" aria-hidden="true"></i></button></div></h1><div class="row" id="render_proyectos"></div>');
 			var source = $("#fichaProyecto").html();
 			var template = Handlebars.compile(source);
 			for(i=0;i<proyectos.length;i++){
