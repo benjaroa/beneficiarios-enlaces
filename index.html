@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<link rel="icon" href="">
+
+		<title>Beneficiarios</title>
+
+		<!-- CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,100,300,500,700,900">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css">
+
+		<!-- Mas CSS -->
+		<style type="text/css">
+		body {
+			padding-top: 70px;
+			font-family:'Roboto';
+			font-weight: 300;
+		}
+		h1,h2,h3,h4 {
+			font-weight: 100;
+		}
+		.modal-backdrop {
+			background-color: #c2c2c2 !important;
+			opacity:1 !important;
+		}
+		#consulta{
+			margin-top: 30px;
+			margin-bottom: 30px;
+		}
+		.card {
+			margin-bottom: 20px;
+			page-break-inside:avoid;
+		}
+		.card p {
+			margin-bottom: 0;
+		}
+		#render_fichaEE {
+			margin-bottom: 20px;
+		}
+		.card .metadata {
+			font-size: 0.8rem;
+		}
+		#minimizar {
+			position: relative;
+			float: right !important;
+			display: block;
+		}
+		#minimizar #boton {
+			position: absolute;
+			right: .5rem;
+			z-index: 10;
+			display: block;
+			padding: .25rem .5rem;
+			color: #818a91;
+			cursor: pointer;
+			background-color: transparent;
+			border-radius: .25rem;
+		}
+		</style>
+	</head>
+
+	<body>
+		<nav class="navbar navbar-toggleable-md navbar-inverse fixed-top bg-inverse hidden-print">
+			<div class="container">
+				<button class="navbar-toggler navbar-toggler-right hidden-lg-up" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<a class="navbar-brand" href="#">Dashboard</a>
+
+				<div class="collapse navbar-collapse" id="navbarsExampleDefault">
+					<ul class="navbar-nav mr-auto">
+						<li class="nav-item active">
+							<a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#">Settings</a>
+						</li>
+					</ul>
+					<form class="form-inline mt-2 mt-md-0">
+						<input class="form-control mr-sm-2" type="text" placeholder="Search">
+						<div class="btn btn-outline-success my-2 my-sm-0">Search</div>
+					</form>
+				</div>
+			</div>
+		</nav>
+
+		<div class="container hidden-print" id="consulta" aria-multiselectable="true">
+			<div class="card">
+				<div class="card-header">
+					<h3>Consulta <a class="collapsed float-right btn" data-toggle="collapse" data-parent="#consulta" href="#consultaBlock" aria-expanded="false" aria-controls="consultaBlock"><i class="fa fa-window-restore" aria-hidden="true"></i></a></h3>
+					<!--div id="minimizar">
+						<a id="boton" class="collapsed" data-toggle="collapse" data-parent="#consulta" href="#consultaBlock" aria-expanded="false" aria-controls="consultaBlock"><i class="fa fa-window-restore" aria-hidden="true"></i></a>
+					</div-->
+					
+					
+				</div>
+				<div id="consultaBlock" class="collapse show">
+					<div class="card-block">
+						<ul class="nav nav-tabs">
+							<li class="nav-item">
+								<a data-toggle="tab" class="nav-link active" href="#tabEE">Establecimiento</a>
+							</li>
+							<li class="nav-item">
+								<a data-toggle="tab" class="nav-link" href="#tabProyecto">Proyecto</a>
+							</li>
+						</ul><br/>
+						<div class="tab-content">
+							<div class="tab-pane active" id="tabEE">
+								<h4 class="card-title">Ficha por establecimiento</h4>
+								<div class="form-group">
+									<label for="RBD">RBD</label>
+									<input type="text" class="form-control" id="RBD" placeholder="123">
+									<small class="text-muted">RBD sin verificador, sólo números.</small>
+								</div>
+							</div>
+							<div class="tab-pane" id="tabProyecto">
+								<h4 class="card-title">Consulta por proyecto</h4>
+								<fieldset class="form-group" id="formProyecto">
+									<legend class="col-form-legend">Datos del proyecto</legend>
+									<div class="form-group">
+										<label for="selectProyecto">Proyecto</label>
+										<select class="custom-select form-control" id="selectProyecto"><option></option></select>
+									</div>
+								</fieldset>
+								<fieldset class="form-group">
+									<legend class="col-form-legend">Datos del beneficiario</legend>
+								</fieldset>
+							</div>
+						</div>
+					</div>
+					<div class="card-footer text-right">
+						<button id="consultar" class="btn btn-primary">Consultar</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="container" id="output">
+
+		</div>
+		<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">Paciencia</h5>
+					</div>
+					<div class="modal-body">
+						El modelo de datos funciona sobre el navegador, hay que darle tiempo para cargar la información.
+					</div>
+					<div class="modal-footer text-center">
+						<button class="btn btn-primary btn-lg btn-block" aria-label="Cargando">
+							<i class="fa fa-circle-o-notch fa-spin fa-fw"></i> Cargando...
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Bootstrap core JavaScript
+		================================================== -->
+		<!-- Placed at the end of the document so the pages load faster -->
+		<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+		<script src="http://cdn.jsdelivr.net/alasql/0.2/alasql.min.js"></script> 
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-sheetrock/1.1.4/dist/sheetrock.min.js"></script> 
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.6/handlebars.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.js"></script>
+
+<script type="text/javascript">
+$(function() {
+	// Arranco el modal
+	$('#myModal').modal({keyboard: false,backdrop:'static'});
+
+	// MODELO
+	//
+	// Defino las hojas con la info
+	// [ doc_key, hoja con la data, hoja con la tabla ]
+	var urls = [
+		["EE","18NtGv4HeUt2mztXi_97Ry3bOW2LDfDOKubfK1YPF-m4","0","356600466"],
+		["metadata","1XfqP4sUJa03OCqAxlcuxdF4ngrH7CAYsPauy6XblcaM","0","1651706596"],
+		["proyectos","1LuILwvPDmo5fwKPdtM3kYCzXNHX8aZzNeuxQlGDPMGs","0","1310070959"],
+		["seleccion","1fuDnP2da7weymEKriDXVBG3Y-EMBPme0XrfNvfrTx0w","0","1110724557"]
+	];
+	// Importo las tablas
+	function importarTablas(url){
+		var cuenta = 0;
+		for(i=0;i<url.length;i++){
+			sheetrock({
+				url: "https://docs.google.com/spreadsheets/d/"+url[i][1]+"#gid="+url[i][3],
+				query: "select A",
+				fetchSize: 2,
+				callback: function (error, options, response) {
+					if (!error) {
+						// sql que crea la tabla
+						res = response; // console.log(res);
+						sql = res.rows[1].cellsArray[0]
+						// ejecuto la consulta
+						alasql.promise(sql)
+							.then(function(response){
+								// eureka
+								console.log("✔ Tabla "+res.rows[0].cellsArray[0]+" creada");
+								cuenta++;
+								// Sólo empiezo a cargar la data cuando terminé de crear las tablas
+								if(cuenta == urls.length){
+									
+									importarData(urls);
+
+								}
+							}).catch(function(err){ console.log(err); });
+					}
+				}
+			});
+		}
+	}
+	importarTablas(urls);
+	//
+	// Función para importar la data
+	function importarData(url){
+		sheetrock.defaults.params = {};
+		var cuenta = 0;
+		for(j=0;j<url.length;j++){
+			sheetrock({
+				params:{"j":j},
+				url: "https://docs.google.com/spreadsheets/d/"+url[j][1]+"#gid="+url[j][2],
+				callback: function (error, options, response) {
+					if (!error) {
+						res = response; // console.log(res);
+						insert = "";
+						j = options.user.params.j;
+						insert += "insert into "+url[j][0]+" values "; 
+
+						// recorro las filas
+						for (i = 0; i < res.raw.table.rows.length; i++) {
+							insert += "(";
+							datos = "";
+
+							// ahora las columnas
+							for (h = 0; h < res.raw.table.rows[i].c.length; h++){
+								if(res.raw.table.rows[i].c[h] == null){ val = ""; }else{ val = res.raw.table.rows[i].c[h].v}
+								if( isNaN(val) ){ val = '\"'+ val +'\"'; }
+								datos += val;
+								if(h < res.raw.table.rows[i].c.length-1){ datos += ","; }
+							}
+
+							insert += datos;
+							insert += ")";
+							if(i < res.raw.table.rows.length-1){ insert += ","; }
+						}
+						// Inserto los datos
+						alasql.promise(insert)
+							.then(function(response){
+								cuenta++;
+								console.log("✔ Data para tabla "+url[j][0]+ " cargada" );
+								// Intento cerrar el modal
+								IniciarApp(cuenta,url.length);
+							}).catch(function(err){
+								// error?
+								console.log(err);
+							});
+					}
+				}
+			});
+		}
+	}
+	//
+	// ! MODELO
+
+	// Consulta por RBD
+	$("#consultar").click(function() {
+		RBD_consulta = $("#RBD").val();
+		if(RBD_consulta == ""){ return false; }
+		var data_EE = alasql('SELECT * FROM EE where RBD='+RBD_consulta);
+		// Si el EE no existe, tiro un error y salgo
+		if(data_EE.length==0){
+			$("#output").empty();
+			$("#output").append('<div class="alert alert-danger" id="render_fichaEE" role="alert"><strong>Error!</strong> La consulta no arrojó resultados.</div>');
+			return false;
+		}
+
+		var source   = $("#fichaEE").html();
+		var template = Handlebars.compile(source);
+		var html    = template(data_EE[0]);
+		//console.log(html);
+		$("#output").empty();
+		$("#output").append(html);
+
+		//////
+		//
+		// EE e
+		// e.RBD
+		// e.NOM_RBD
+		// e.Region
+		// e.Provincia
+		// e.Comuna
+		// e.Comuna_Nombre
+		// e.DEPROV
+		// e.DEPROV_Nombre
+		// e.Dependencia
+		// e.RURAL_RBD
+		//
+		// proyectos p
+		// p.Sigla_Proyecto
+		// p.Anho_Convocatoria
+		// p.Proyecto
+		// p.EE_Invitados
+		// p.EE_Seleccionados
+		// p.Descripcion_Beneficio
+		//
+		// seleccion s
+		// s.RBD
+		// s.Sigla_Proyecto
+		// s.Anho_Convocatoria
+		//
+		// metadata m
+		// m.RBD
+		// m.Sigla_Proyecto
+		// m.Anho_Convocatoria
+		// m.Clave
+		// m.Valor
+		//
+		//////
+
+		// Segunda consulta: Proyecto y Seleccion
+		/*var sql = alasql("SELECT p.Proyecto, p.Sigla_Proyecto, ARRAY({Anho_Convocatoria:p.Anho_Convocatoria, EE_Invitados:p.EE_Invitados,EE_Seleccionados:p.EE_Seleccionados, Descripcion_Beneficio:p.Descripcion_Beneficio}) AS convocatorias \
+						FROM seleccion b \
+						OUTER JOIN proyectos p ON \
+							b.Sigla_Proyecto = p.Sigla_Proyecto AND \
+							b.Anho_Convocatoria = p.Anho_Convocatoria \
+						WHERE b.RBD = 1 GROUP BY p.Proyecto, p.Sigla_Proyecto");*/
+
+		var proyectos = alasql("\
+			SELECT \
+				p.Proyecto, \
+				p.Sigla_Proyecto, \
+				ARRAY({ \
+					status:b.status, \
+					observacion:b.observacion, \
+					Anho_Convocatoria:p.Anho_Convocatoria, \
+					EE_Invitados:p.EE_Invitados, \
+					EE_Seleccionados:p.EE_Seleccionados, \
+					Descripcion_Beneficio:p.Descripcion_Beneficio \
+				}) AS convocatorias \
+			FROM \
+				seleccion b, proyectos p \
+			WHERE \
+				b.Sigla_Proyecto = p.Sigla_Proyecto AND \
+				b.Anho_Convocatoria = p.Anho_Convocatoria AND \
+				b.RBD = "+RBD_consulta+" \
+			GROUP BY \
+				p.Proyecto, \
+				p.Sigla_Proyecto\
+		");
+		console.log(proyectos);
+
+		//
+		// HAY QUE HACER QUE SEA SECUENCIAL, como la consulta
+		//
+
+		/*var sqlbig = alasql("SELECT p.Proyecto, p.Sigla_Proyecto, ARRAY({Anho_Convocatoria:p.Anho_Convocatoria, EE_Invitados:p.EE_Invitados,EE_Seleccionados:p.EE_Seleccionados, Descripcion_Beneficio:p.Descripcion_Beneficio, ARRAY({Clave:m.Clave,Valor:m.Valor}) as [metadata] }) AS convocatorias}) AS convocatorias \
+			FROM seleccion b, proyectos p, metadata m \
+			WHERE \
+				b.Sigla_Proyecto = p.Sigla_Proyecto AND b.Sigla_Proyecto = m.Sigla_Proyecto AND \
+				b.Anho_Convocatoria = p.Anho_Convocatoria AND b.Anho_Convocatoria = m.Anho_Convocatoria AND \
+				b.RBD = 1 \
+			GROUP BY p.Proyecto, p.Sigla_Proyecto");*/
+
+		// Tercera consulta: Metadata
+		var mdata = alasql("\
+			SELECT \
+				m.RBD, \
+				m.Sigla_Proyecto, \
+				m.Anho_Convocatoria, \
+				ARRAY({ \
+					Clave:m.Clave, \
+					Valor:m.Valor \
+				}) as [metadata] \
+			FROM \
+				metadata m, \
+				seleccion s \
+			WHERE \
+				s.RBD = m.RBD AND \
+				s.Sigla_Proyecto = m.Sigla_Proyecto AND \
+				s.Anho_Convocatoria = m.Anho_Convocatoria AND \
+				s.RBD = "+RBD_consulta+" \
+			GROUP BY \
+				m.RBD, \
+				m.Sigla_Proyecto, \
+				m.Anho_Convocatoria \
+		");
+
+		// alasql("SELECT p.*,s.* FROM seleccion b, proyectos p WHERE b.Sigla_Proyecto = p.Sigla_Proyecto AND b.Anho_Convocatoria = p.Anho_Convocatoria AND b.RBD = 1");
+		
+		//alasql("SELECT p.Proyecto, p.Sigla_Proyecto, FROM seleccion b OUTER JOIN proyectos c ON b.Sigla_Proyecto = c.Sigla_Proyecto and b.Anho_Convocatoria = c.Anho_Convocatoria OUTER JOIN metadata d ON b.RBD = d.RBD and c.Sigla_Proyecto = b.Sigla_Proyecto and c.Anho_Convocatoria = d.Anho_Convocatoria and b.Sigla_Proyecto = d.Sigla_Proyecto WHERE b.RBD = 1 GROUP BY b.Sigla_Proyecto");
+		
+		//alasql("SELECT p.Proyecto, p.Sigla_Proyecto, ARRAY(SELECT p.Anho_Convocatoria, p.Descripcion_Beneficio, p.EE_Invitados, p.EE_Seleccionados FROM seleccion b OUTER JOIN proyectos p ON b.Sigla_Proyecto = p.Sigla_Proyecto and b.Anho_Convocatoria = p.Anho_Convocatoria WHERE b.RBD = 1) as convocatorias FROM seleccion b OUTER JOIN proyectos p ON b.Sigla_Proyecto = p.Sigla_Proyecto and b.Anho_Convocatoria = p.Anho_Convocatoria WHERE b.RBD = 1 GROUP BY b.Sigla_Proyecto");
+
+		//var data_Proyectos_EE = alasql('SELECT * FROM phases q WHERE (SELECT COUNT(*) \
+        //				FROM phases t WHERE t.Phase = q.Phase) = 2');
+		
+		if(mdata[0].RBD != undefined){
+			for(i=0;i<proyectos.length;i++){
+				for(j=0;j<proyectos[i].convocatorias.length;j++){
+					// variables a usar en la búsqueda
+					proyecto_actual = proyectos[i].Sigla_Proyecto;
+					anho_convocatoria_actual = proyectos[i].convocatorias[0].Anho_Convocatoria;
+					// busco
+					eme = alasql("SEARCH / * WHERE(Anho_Convocatoria="+anho_convocatoria_actual+" AND Sigla_Proyecto='"+proyecto_actual+"') FROM ?",[mdata]);
+					// guardo
+					proyectos[i].convocatorias[j]["metadata"] = eme[0].metadata;
+				}
+			}
+		}
+		//console.log(proyectos);
+		//console.log(JSON.stringify(proyectos));
+		$("#render_proyectos").remove();
+		$("#output").append('<h1>Proyectos</h1><div class="row" id="render_proyectos"></div>');
+		var source   = $("#fichaProyecto").html();
+		var template = Handlebars.compile(source);
+		for(i=0;i<proyectos.length;i++){
+			var html    = template(proyectos[i]);
+			$("#render_proyectos").append(html);
+		}
+		// escondo el panel de búsqueda
+		$("#consultaBlock").collapse('hide');
+	});
+
+	// Formularios
+	$("#formConsulta").submit( function(e){ 
+		e.preventDefault();
+		return false;
+	});
+
+	function IniciarApp(recuento,denominador){
+		if(recuento==denominador){
+			// si terminamos de cargar los elementos del arreglos...
+			// cierro el modal
+			$('#myModal').modal('hide');
+			
+			// precargo el select de proyectos
+			var data_Proyectos = alasql('SELECT DISTINCT Proyecto, Sigla_Proyecto FROM proyectos');
+			for(i=0;i<data_Proyectos.length;i++){
+				actual = data_Proyectos[i];
+				$("#selectProyecto").append('<option value="'+actual.Sigla_Proyecto+'">'+actual.Proyecto+'</option>');
+			}
+		}
+	}
+	//<select class="custom-select form-control" id="selectProyecto"><option></option></select>
+	$(document).on('change','#selectProyecto',function(){
+		dataSelect = $('#selectProyecto').val();
+		if(dataSelect == ""){ 
+			$('#formConvocatoria').remove();
+		}else{
+			// Si no existe el select, lo creo
+			if($('#formProyecto #selectConvocatoria').length ==0){ 
+				$('#formProyecto').append('<div class="form-group" id="formConvocatoria"><label class="col-xs-3 control-label">Convocatoria</label><div class="col-xs-5"><select class="custom-select form-control" id="selectConvocatoria" multiple="multiple"></select></div></div>');
+				$('#selectConvocatoria').multiselect({
+					buttonContainer: '<div class="btn-group" />',
+					buttonClass: 'btn btn-secondary',
+					templates: {
+						li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>'
+					}
+				});
+			}
+			// Busco la data
+			alasql.promise("select Anho_Convocatoria FROM proyectos WHERE Sigla_Proyecto='"+dataSelect+"'")
+				.then(function(response){
+					// vacío el select
+					$('#selectConvocatoria').empty();
+					// agrego el resto
+					for(i=0;i<response.length;i++){
+						$("#selectConvocatoria").append('<option value="'+response[i].Anho_Convocatoria+'">'+response[i].Anho_Convocatoria+'</option>');	
+					}
+					// Actualizo multiselect	
+					$('#selectConvocatoria').multiselect('rebuild');				
+				}).catch(function(err){
+					// error?
+					console.log(err);
+				});
+		}
+	});
+});
+</script>
+<script id="fichaEE" type="text/x-handlebars-template">
+<h1>Ficha del Establecimiento</h1>
+<div class="card" id="render_fichaEE">
+	<h3 class="card-header">{{NOM_RBD}}</h3>
+	<div class="card-block">
+		<div class="container">
+			<div class="row">
+				<div class="col">
+					<table class="table table-condensed">
+						<tbody>
+							<tr><td>RBD</td><td>{{RBD}}</td></tr>
+							<tr><td>Región</td><td>{{Region}}</td></tr>
+							<tr><td>Comuna</td><td>{{Comuna_Nombre}}</td></tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="col">
+					<table class="table table-condensed">
+						<tbody>
+							<tr><td>DEPROV</td><td>{{DEPROV_Nombre}}</td></tr>
+							<tr><td>Dependencia</td><td>{{Dependencia}}</td></tr>
+							<tr><td>RURAL_RBD</td><td>{{RURAL_RBD}}</td></tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</script>
+<script id="fichaProyecto" type="text/x-handlebars-template">
+	<div class="col-md-6 col-lg-4">
+		<div class="card">
+			<div class="card-header">{{Proyecto}}</div>
+			<div class="card-block">
+				{{#each convocatorias}}
+					<p><b>{{Anho_Convocatoria}}</b></p>
+					<p>{{status}}</p>
+					{{#if metadata}}
+						<ul class="metadata">
+							{{#each metadata}}
+								<li>{{Clave}}: {{Valor}}</li>
+							{{/each}}
+						</ul>
+					{{/if}}
+				{{/each}}
+			</div>
+		</div>
+	</div>
+</script>
+	</body>
+</html>
