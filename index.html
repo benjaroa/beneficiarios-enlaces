@@ -393,6 +393,7 @@ $(function() {
 				m.Sigla_Proyecto, \
 				m.Anho_Convocatoria \
 		");
+		//console.log(mdata);
 
 		// Junto ambas consultas en un sólo objeto (sólo si hay metadata)
 		if(mdata[0].RBD != undefined){
@@ -413,15 +414,29 @@ $(function() {
 
 		// Se imprime
 		$("#render_proyectos").remove();
+		$("#render_tabla").remove();
 		// chequeo si hay proyectos y imprimo
 		if(proyectos[0].Proyecto != undefined){
-			$("#output").append('<h1>Proyectos <div class="btn-group float-right" role="group" aria-label="vista"><button type="button" class="btn btn-secondary active"><i class="fa fa-th" aria-hidden="true"></i></button><button type="button" class="btn btn-secondary"><i class="fa fa-table" aria-hidden="true"></i></button></div></h1><div class="row" id="render_proyectos"></div>');
+			// Encabezado
+			$("#output").append('<h1>Proyectos <div class="btn-group float-right" id="vista" role="group" aria-label="vista"><button type="button" class="btn btn-secondary active" id="ver_grupo"><i class="fa fa-th" aria-hidden="true"></i></button><button type="button" class="btn btn-secondary" id="ver_tabla"><i class="fa fa-table" aria-hidden="true"></i></button></div></h1><div class="row" id="render_proyectos"></div>');
+
+			$("#output").append('<div class="" id="render_tabla"></div>');
+			
+			// Fichas x proyecto
 			var source = $("#fichaProyecto").html();
 			var template = Handlebars.compile(source);
 			for(i=0;i<proyectos.length;i++){
 				var html = template(proyectos[i]);
 				$("#render_proyectos").append(html);
 			}
+			// Tabla con data
+			var source = $("#tablaCobertura").html();
+			var template = Handlebars.compile(source);
+			console.log(proyectos);
+			var html = template({proy:proyectos});
+			$("#render_tabla").append(html);
+			$("#render_tabla").hide();
+
 		}else{
 			$("#output").append('<div class="alert alert-warning" role="alert">No hay proyectos asociados al establecimiento.</div>');
 		}
@@ -437,7 +452,7 @@ $(function() {
 	});
 
 	function IniciarApp(recuento,denominador){
-		if(recuento==denominador){
+		if(recuento == denominador){
 			// si terminamos de cargar los elementos del arreglos...
 			// cierro el modal
 			$('#myModal').modal('hide');
@@ -450,6 +465,15 @@ $(function() {
 			}
 		}
 	}
+
+	// cambiar vista
+	$(document).on('click','#vista button',function(){
+		$('#vista button').removeClass("active");
+		$(this).addClass("active");
+		//$( ".target" ).toggle();
+		$("#render_proyectos").toggle();
+		$("#render_tabla").toggle();
+	});
 	//<select class="custom-select form-control" id="selectProyecto"><option></option></select>
 	$(document).on('change','#selectProyecto',function(){
 		dataSelect = $('#selectProyecto').val();
@@ -535,6 +559,34 @@ $(function() {
 			</div>
 		</div>
 	</div>
+</script>
+<script id="tablaCobertura" type="text/x-handlebars-template">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				<th>Proyecto</th>
+				<th>Año</th>
+				<th>Estado</th>
+				<th>Detalles</th>
+			</tr>
+		</thead>
+		<tbody>
+			{{#each proy}}
+			{{#each convocatorias}}
+			<tr>
+				<td>{{../Proyecto}}</td>
+				<td>{{Anho_Convocatoria}}</td>
+				<td>{{status}}</td>
+				<td>
+					{{#each metadata}}
+						{{Clave}}: {{Valor}}<br />
+					{{/each}}
+				</td>
+			</tr>
+			{{/each}}
+			{{/each}}
+		</tbody>
+	</table>
 </script>
 	</body>
 </html>
