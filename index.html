@@ -468,11 +468,12 @@ $(function() {
 
 	// cambiar vista
 	$(document).on('click','#vista button',function(){
-		$('#vista button').removeClass("active");
-		$(this).addClass("active");
-		//$( ".target" ).toggle();
-		$("#render_proyectos").toggle();
-		$("#render_tabla").toggle();
+		if(!$(this).hasClass("active")){
+			$('#vista button').removeClass("active");
+			$(this).addClass("active");
+			$("#render_proyectos").toggle();
+			$("#render_tabla").toggle();
+		}
 	});
 	//<select class="custom-select form-control" id="selectProyecto"><option></option></select>
 	$(document).on('change','#selectProyecto',function(){
