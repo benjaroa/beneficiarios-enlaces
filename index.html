@@ -400,12 +400,16 @@ $(function() {
 			for(i=0;i<proyectos.length;i++){
 				for(j=0;j<proyectos[i].convocatorias.length;j++){
 					// variables a usar en la búsqueda
+					eme = "";
 					proyecto_actual = proyectos[i].Sigla_Proyecto;
-					anho_convocatoria_actual = proyectos[i].convocatorias[0].Anho_Convocatoria;
+					anho_convocatoria_actual = proyectos[i].convocatorias[j].Anho_Convocatoria;
+
+					//console.log({"Año":anho_convocatoria_actual,"Proyecto":proyecto_actual});
 					// busco
 					eme = alasql("SEARCH / * WHERE(Anho_Convocatoria="+anho_convocatoria_actual+" AND Sigla_Proyecto='"+proyecto_actual+"') FROM ?",[mdata]);
 					// guardo
-					proyectos[i].convocatorias[j]["metadata"] = eme[0].metadata;
+					if(eme.length > 0)
+						proyectos[i].convocatorias[j]["metadata"] = eme[0].metadata;
 				}
 			}
 		}
@@ -432,7 +436,7 @@ $(function() {
 			// Tabla con data
 			var source = $("#tablaCobertura").html();
 			var template = Handlebars.compile(source);
-			console.log(proyectos);
+			//console.log(proyectos);
 			var html = template({proy:proyectos});
 			$("#render_tabla").append(html);
 			$("#render_tabla").hide();
