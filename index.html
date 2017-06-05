@@ -470,6 +470,15 @@ $(function() {
 		}
 	}
 
+	// Filtro para capitalizar palabras en Handlevars
+	Handlebars.registerHelper('capitalizar', function(value) {
+		if(value && typeof value === 'string') {
+			return value.charAt(0).toUpperCase() + value.slice(1);
+		} else {
+			return '';
+		}
+	});
+
 	// cambiar vista
 	$(document).on('click','#vista button',function(){
 		if(!$(this).hasClass("active")){
@@ -552,11 +561,11 @@ $(function() {
 			<div class="card-block">
 				{{#each convocatorias}}
 					<p><b>{{Anho_Convocatoria}}</b></p>
-					<p>{{status}}</p>
+					<p>{{capitalizar status}}</p>
 					{{#if metadata}}
 						<ul class="metadata">
 							{{#each metadata}}
-								<li>{{Clave}}: {{Valor}}</li>
+								<li>{{capitalizar Clave}}: {{Valor}}</li>
 							{{/each}}
 						</ul>
 					{{/if}}
@@ -581,10 +590,10 @@ $(function() {
 			<tr>
 				<td>{{../Proyecto}}</td>
 				<td>{{Anho_Convocatoria}}</td>
-				<td>{{status}}</td>
+				<td>{{capitalizar status}}</td>
 				<td>
 					{{#each metadata}}
-						{{Clave}}: {{Valor}}<br />
+						{{capitalizar Clave}}: {{Valor}}<br />
 					{{/each}}
 				</td>
 			</tr>
