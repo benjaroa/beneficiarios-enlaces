@@ -97,8 +97,6 @@
 					<!--div id="minimizar">
 						<a id="boton" class="collapsed" data-toggle="collapse" data-parent="#consulta" href="#consultaBlock" aria-expanded="false" aria-controls="consultaBlock"><i class="fa fa-window-restore" aria-hidden="true"></i></a>
 					</div-->
-					
-					
 				</div>
 				<div id="consultaBlock" class="collapse show">
 					<div class="card-block">
@@ -292,14 +290,20 @@ $(function() {
 
 	// Consulta por RBD
 	$("#consultar").click(function() {
+		
 		RBD_consulta = $("#RBD").val();
-		if(RBD_consulta == ""){ return false; }
+		if(RBD_consulta == ""){
+			$("#consultar i").remove();
+			return false;
+		}
+
 		var data_EE = alasql('SELECT * FROM EE where RBD='+RBD_consulta);
 		// Si el EE no existe, tiro un error y salgo
 		if(data_EE.length==0){
 			$("#output").empty();
 			$("#output").append('<div class="alert alert-danger" id="render_fichaEE" role="alert"><strong>Error!</strong> La consulta no arrojó resultados.</div>');
-			return false;
+			$("#consultar i").remove();
+			return false;			
 		}
 
 		var source   = $("#fichaEE").html();
@@ -371,6 +375,28 @@ $(function() {
 		//console.log(proyectos);
 
 		// Tercera consulta: Metadata
+		// var mdata = alasql("\
+		// 	SELECT \
+		// 		m.RBD, \
+		// 		m.Sigla_Proyecto, \
+		// 		m.Anho_Convocatoria, \
+		// 		ARRAY({ \
+		// 			Clave:m.Clave, \
+		// 			Valor:m.Valor \
+		// 		}) as [metadata] \
+		// 	FROM \
+		// 		metadata m, \
+		// 		seleccion s \
+		// 	WHERE \
+		// 		s.RBD = m.RBD AND \
+		// 		s.Sigla_Proyecto = m.Sigla_Proyecto AND \
+		// 		s.Anho_Convocatoria = m.Anho_Convocatoria AND \
+		// 		s.RBD = "+RBD_consulta+" \
+		// 	GROUP BY \
+		// 		m.RBD, \
+		// 		m.Sigla_Proyecto, \
+		// 		m.Anho_Convocatoria \
+		// ");
 		var mdata = alasql("\
 			SELECT \
 				m.RBD, \
@@ -381,13 +407,9 @@ $(function() {
 					Valor:m.Valor \
 				}) as [metadata] \
 			FROM \
-				metadata m, \
-				seleccion s \
+				metadata m
 			WHERE \
-				s.RBD = m.RBD AND \
-				s.Sigla_Proyecto = m.Sigla_Proyecto AND \
-				s.Anho_Convocatoria = m.Anho_Convocatoria AND \
-				s.RBD = "+RBD_consulta+" \
+				m.RBD = "+RBD_consulta+" \
 			GROUP BY \
 				m.RBD, \
 				m.Sigla_Proyecto, \
@@ -445,6 +467,7 @@ $(function() {
 			$("#output").append('<div class="alert alert-warning" role="alert">No hay proyectos asociados al establecimiento.</div>');
 		}
 		// escondo el panel de búsqueda
+		$("#consultar i").remove();
 		$("#consultaBlock").collapse('hide');
 	});
 	// ! Consulta por RBD
@@ -452,6 +475,7 @@ $(function() {
 	// Formularios
 	$("#formConsulta").submit( function(e){ 
 		e.preventDefault();
+		$("#consultar").append(' <i class="fa fa-spinner fa-pulse fa-fw"></i>');
 		return false;
 	});
 
