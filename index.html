@@ -244,7 +244,7 @@ $(function() {
 								
 								// si la celda viene vacía
 								if(res.raw.table.rows[i].c[h] == null){
-									val = ""; 
+									val = "0"; 
 								}else{
 									val = res.raw.table.rows[i].c[h].v
 								}
@@ -372,6 +372,31 @@ $(function() {
 				p.Proyecto, \
 				p.Sigla_Proyecto\
 		");
+		/*
+		var seleccion = alasql("\
+			SELECT \
+				e.RBD, \
+				e.NOM_RBD, \
+				p.Proyecto, \
+				p.Sigla_Proyecto, \
+				b.status, \
+				b.observacion, \
+				p.Anho_Convocatoria \
+			FROM \
+				EE e, seleccion b, proyectos p \
+			WHERE \
+				e.RBD = b.RBD AND \
+				b.Sigla_Proyecto = p.Sigla_Proyecto AND \
+				b.Anho_Convocatoria = p.Anho_Convocatoria AND \
+				b.Sigla_Proyecto = 'Tablet' \
+			GROUP BY \
+				e.RBD \
+			LIMIT 10 \
+		");
+		alasql('\
+			SELECT \
+				e.RBD, e.NOM_RBD, b.Sigla_Proyecto, b.status, b.observacion, b.Anho_Convocatoria \
+			FROM EE e JOIN seleccion b USING RBD where b.Sigla_Proyecto = "Tablet" GROUP BY e.RBD, e.NOM_RBD, b.Sigla_Proyecto, b.status, b.observacion, b.Anho_Convocatoria ');*/
 		//console.log(proyectos);
 
 		// Tercera consulta: Metadata
