@@ -317,15 +317,22 @@ $(function() {
 		//
 		// EE e
 		// e.RBD
-		// e.NOM_RBD
+		// e.Nombre_Establecimiento
+		// e.RUT_SOSTENEDOR
 		// e.Region
-		// e.Provincia
-		// e.Comuna
-		// e.Comuna_Nombre
-		// e.DEPROV
-		// e.DEPROV_Nombre
-		// e.Dependencia
-		// e.RURAL_RBD
+		// e.Codigo_Provincia
+		// e.Codigo_Comuna
+		// e.Nombre_Comuna
+		// e.Codigo_Deprov
+		// e.Nombre_Deprov
+		// e.Codigo_Dependencia
+		// e.Codigo_Dependencia2
+		// e.RURAL
+		// e.LATITUD
+		// e.LONGITUD
+		// e.Convenio_PIE
+		// e.Presenta_Matricula
+		// e.ESTADO
 		//
 		// proyectos p
 		// p.Sigla_Proyecto
@@ -393,10 +400,61 @@ $(function() {
 				e.RBD \
 			LIMIT 10 \
 		");
+
+		// CONSULTA POR PROYECTO 
+		//OUTER JOIN proyectos p ON b.Sigla_Proyecto = p.Sigla_Proyecto \
 		alasql('\
 			SELECT \
-				e.RBD, e.NOM_RBD, b.Sigla_Proyecto, b.status, b.observacion, b.Anho_Convocatoria \
-			FROM EE e JOIN seleccion b USING RBD where b.Sigla_Proyecto = "Tablet" GROUP BY e.RBD, e.NOM_RBD, b.Sigla_Proyecto, b.status, b.observacion, b.Anho_Convocatoria ');*/
+				e.RBD, \
+				e.Nombre_Establecimiento, \
+				e.RUT_SOSTENEDOR, \
+				e.Region, \
+				e.Codigo_Provincia, \
+				e.Codigo_Comuna, \
+				e.Nombre_Comuna, \
+				e.Codigo_Deprov, \
+				e.Nombre_Deprov, \
+				e.Codigo_Dependencia, \
+				e.Codigo_Dependencia2, \
+				e.RURAL, \
+				e.LATITUD, \
+				e.LONGITUD, \
+				e.Convenio_PIE, \
+				e.Presenta_Matricula, \
+				e.ESTADO, \
+				b.Sigla_Proyecto, \
+				p.Proyecto, \
+				b.status, \
+				b.observacion, \
+				b.Anho_Convocatoria \
+			FROM seleccion b, proyectos p \
+			JOIN EE e USING b.RBD \
+			WHERE \
+				p.Sigla_Proyecto = b.Sigla_Proyecto AND \
+				b.Sigla_Proyecto = "Tablet" \
+			GROUP BY \
+				e.RBD, \
+				e.Nombre_Establecimiento, \
+				e.RUT_SOSTENEDOR, \
+				e.Region, \
+				e.Codigo_Provincia, \
+				e.Codigo_Comuna, \
+				e.Nombre_Comuna, \
+				e.Codigo_Deprov, \
+				e.Nombre_Deprov, \
+				e.Codigo_Dependencia, \
+				e.Codigo_Dependencia2, \
+				e.RURAL, \
+				e.LATITUD, \
+				e.LONGITUD, \
+				e.Convenio_PIE, \
+				e.Presenta_Matricula, \
+				e.ESTADO, \
+				b.Sigla_Proyecto, \
+				p.Proyecto \
+			');
+		*/
+
 		//console.log(proyectos);
 
 		// Tercera consulta: Metadata
@@ -576,7 +634,7 @@ $(function() {
 <script id="fichaEE" type="text/x-handlebars-template">
 <h1>Ficha del Establecimiento</h1>
 <div class="card" id="render_fichaEE">
-	<h3 class="card-header">{{NOM_RBD}}</h3>
+	<h3 class="card-header">{{Nombre_Establecimiento}}</h3>
 	<div class="card-block">
 		<div class="container">
 			<div class="row">
@@ -584,17 +642,21 @@ $(function() {
 					<table class="table table-condensed">
 						<tbody>
 							<tr><td>RBD</td><td>{{RBD}}</td></tr>
+							<tr><td>Rut Sostenedor</td><td>{{RUT_SOSTENEDOR}}</td></tr>
 							<tr><td>Región</td><td>{{Region}}</td></tr>
-							<tr><td>Comuna</td><td>{{Comuna_Nombre}}</td></tr>
+							<tr><td>Comuna</td><td>{{Nombre_Comuna}}</td></tr>
+							<tr><td>Deprov</td><td>{{Nombre_Deprov}}</td></tr>
 						</tbody>
 					</table>
 				</div>
 				<div class="col">
 					<table class="table table-condensed">
 						<tbody>
-							<tr><td>DEPROV</td><td>{{DEPROV_Nombre}}</td></tr>
-							<tr><td>Dependencia</td><td>{{Dependencia}}</td></tr>
-							<tr><td>RURAL_RBD</td><td>{{RURAL_RBD}}</td></tr>
+							<tr><td>Dependencia</td><td>{{Codigo_Dependencia}}</td></tr>
+							<tr><td>Rural</td><td>{{RURAL}}</td></tr>
+							<tr><td>Convenio PIE</td><td>{{Convenio_PIE}}</td></tr>
+							<tr><td>Cuenta con matrícula</td><td>{{Presenta_Matricula}}</td></tr>
+							<tr><td>Estado</td><td>{{ESTADO}}</td></tr>
 						</tbody>
 					</table>
 				</div>
