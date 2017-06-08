@@ -527,8 +527,9 @@ $(function() {
 		// chequeo si hay proyectos y imprimo
 		if(proyectos[0].Proyecto != undefined){
 			// Encabezado
-			$("#output").append('<h1>Proyectos <div class="btn-group float-right" id="vista" role="group" aria-label="vista"><button type="button" class="btn btn-secondary active" id="ver_grupo"><i class="fa fa-th" aria-hidden="true"></i></button><button type="button" class="btn btn-secondary" id="ver_tabla"><i class="fa fa-table" aria-hidden="true"></i></button></div></h1><div class="row" id="render_proyectos"></div>');
+			$("#output").append('<h1>Proyectos <div class="btn-group float-right" id="vista" role="group" aria-label="vista"><button type="button" class="btn btn-secondary active" id="ver_grupo"><i class="fa fa-th" aria-hidden="true"></i></button><button type="button" class="btn btn-secondary" id="ver_tabla"><i class="fa fa-table" aria-hidden="true"></i></button></div></h1>');
 
+			$("#output").append('<div class="card-columns" id="render_proyectos"></div>');
 			$("#output").append('<div class="" id="render_tabla"></div>');
 			
 			// Fichas x proyecto
@@ -666,12 +667,12 @@ $(function() {
 </div>
 </script>
 <script id="fichaProyecto" type="text/x-handlebars-template">
-	<div class="col-md-6 col-lg-4">
+	<!--div class="col-md-6 col-lg-4"-->
 		<div class="card">
 			<div class="card-header">{{Proyecto}}</div>
 			<div class="card-block">
 				{{#each convocatorias}}
-					<p><b>{{Anho_Convocatoria}}</b> {{status}}</p>
+					<h6>{{Anho_Convocatoria}} <small>/ {{status}}</small></h6>
 					{{#if metadata}}
 						<ul class="metadata">
 							{{#each metadata}}
@@ -682,7 +683,7 @@ $(function() {
 				{{/each}}
 			</div>
 		</div>
-	</div>
+	<!--/div-->
 </script>
 <script id="tablaCobertura" type="text/x-handlebars-template">
 	<table class="table table-hover table-striped table-bordered">
