@@ -446,14 +446,31 @@ $(function() {
 				var consultaProyecto = alasql('\
 					SELECT \
 						b.RBD, \
+						b.Anho_Convocatoria, \
 						b.status, \
 						e.Nombre_Establecimiento \
 					FROM seleccion b, EE e \
 					WHERE \
 						b.Sigla_Proyecto = "'+Proyecto_consulta+'" AND \
-						'+ (convocatorias != null ? "b.Anho_Convocatoria IN("+convocatorias+") AND " : "") +'\
+						'+ (convocatorias != "" ? "b.Anho_Convocatoria IN("+convocatorias+") AND " : "") +'\
 						b.RBD = e.RBD \
 					'); console.log(consultaProyecto);
+
+				// Encabezado
+				$("#output").empty();
+				$("#output").append('<h1>Nómina de Establecimientos</h1>');
+				$("#output").append('<div class="" id="render_tabla"></div>');
+
+				// Tabla con data
+				var source = $("#tablaCoberturaProyecto").html();
+				var template = Handlebars.compile(source);
+				//console.log(proyectos);
+				var html = template({RBD:consultaProyecto});
+				$("#render_tabla").append(html);
+
+				// escondo el panel de búsqueda
+				$("#consultar i").remove();
+				$("#consultaBlock").collapse('hide');
 
 			break; /* </Consulta x Proyecto> */
 		}
@@ -614,6 +631,28 @@ $(function() {
 				</td>
 			</tr>
 			{{/each}}
+			{{/each}}
+		</tbody>
+	</table>
+</script>
+<script id="tablaCoberturaProyecto" type="text/x-handlebars-template">
+	<table class="table table-hover table-striped table-bordered">
+		<thead class="thead-inverse">
+			<tr>
+				<th>RBD</th>
+				<th>Nombre Establecimiento</th>
+				<th>Convocatoria</th>
+				<th>Status</th>
+			</tr>
+		</thead>
+		<tbody>
+			{{#each RBD}}
+			<tr>
+				<td>{{RBD}}</td>
+				<td>{{Nombre_Establecimiento}}</td>
+				<td>{{Anho_Convocatoria}}</td>
+				<td>{{status}}</td>
+			</tr>
 			{{/each}}
 		</tbody>
 	</table>
