@@ -425,7 +425,7 @@ $(function() {
 			
 			case "tabProyecto": /* <Consulta x Proyecto> */
 				Proyecto_consulta = $("#selectProyecto").val(); //console.log(Proyecto_consulta);
-				convocatorias_consulta = $("#selectConvocatoria").val(); //console.log(convocatorias_consulta);
+				convocatorias_consulta = $("#selectConvocatoria").val(); console.log(convocatorias_consulta);
 				
 				var convocatorias;
 				if(convocatorias_consulta != null){	
@@ -443,7 +443,7 @@ $(function() {
 				}
 
 				//## 1. Consulto...
-				var consultaProyecto = alasql('\
+				/*var consultaProyecto = alasql('\
 					SELECT \
 						b.RBD, \
 						b.status, \
@@ -453,7 +453,7 @@ $(function() {
 						b.Sigla_Proyecto = "'+Proyecto_consulta+'" AND \
 						'+ (convocatorias != null ? "b.Anho_Convocatoria IN("+convocatorias+") AND " : "") +'\
 						b.RBD = e.RBD \
-					'); console.log(consultaProyecto);
+					'); console.log(consultaProyecto);*/
 
 			break; /* </Consulta x Proyecto> */
 		}
