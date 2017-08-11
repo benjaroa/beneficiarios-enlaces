@@ -288,273 +288,177 @@ $(function() {
 	//
 	// ! MODELO
 
-	// Consulta por RBD
+	// Consulta
 	$("#consultar").click(function() {
-		
-		RBD_consulta = $("#RBD").val();
-		if(RBD_consulta == ""){
-			$("#consultar i").remove();
-			return false;
-		}
 
-		var data_EE = alasql('SELECT * FROM EE where RBD='+RBD_consulta);
-		// Si el EE no existe, tiro un error y salgo
-		if(data_EE.length==0){
-			$("#output").empty();
-			$("#output").append('<div class="alert alert-danger" id="render_fichaEE" role="alert"><strong>Error!</strong> La consulta no arrojó resultados.</div>');
-			$("#consultar i").remove();
-			return false;			
-		}
+		var tab = $("#consultaBlock .tab-content .active").attr("id");
 
-		var source   = $("#fichaEE").html();
-		var template = Handlebars.compile(source);
-		var html    = template(data_EE[0]);
-		//console.log(html);
-		$("#output").empty();
-		$("#output").append(html);
+		switch(tab){
+			case "tabEE": /* <Consulta x EE> */
 
-		//////
-		//
-		// EE e
-		// e.RBD
-		// e.Nombre_Establecimiento
-		// e.RUT_SOSTENEDOR
-		// e.Region
-		// e.Codigo_Provincia
-		// e.Codigo_Comuna
-		// e.Nombre_Comuna
-		// e.Codigo_Deprov
-		// e.Nombre_Deprov
-		// e.Codigo_Dependencia
-		// e.Codigo_Dependencia2
-		// e.RURAL
-		// e.LATITUD
-		// e.LONGITUD
-		// e.Convenio_PIE
-		// e.Presenta_Matricula
-		// e.ESTADO
-		//
-		// proyectos p
-		// p.Sigla_Proyecto
-		// p.Anho_Convocatoria
-		// p.Proyecto
-		// p.EE_Invitados
-		// p.EE_Seleccionados
-		// p.Descripcion_Beneficio
-		//
-		// seleccion s
-		// s.RBD
-		// s.Sigla_Proyecto
-		// s.Anho_Convocatoria
-		//
-		// metadata m
-		// m.RBD
-		// m.Sigla_Proyecto
-		// m.Anho_Convocatoria
-		// m.Clave
-		// m.Valor
-		//
-		//////
-
-		// Segunda consulta: Proyecto y Seleccion
-		var proyectos = alasql("\
-			SELECT \
-				p.Proyecto, \
-				p.Sigla_Proyecto, \
-				ARRAY({ \
-					status:b.status, \
-					observacion:b.observacion, \
-					Anho_Convocatoria:p.Anho_Convocatoria, \
-					EE_Invitados:p.EE_Invitados, \
-					EE_Seleccionados:p.EE_Seleccionados, \
-					Descripcion_Beneficio:p.Descripcion_Beneficio \
-				}) AS convocatorias \
-			FROM \
-				seleccion b, proyectos p \
-			WHERE \
-				b.Sigla_Proyecto = p.Sigla_Proyecto AND \
-				b.Anho_Convocatoria = p.Anho_Convocatoria AND \
-				b.RBD = "+RBD_consulta+" \
-			GROUP BY \
-				p.Proyecto, \
-				p.Sigla_Proyecto\
-		");
-		/*
-		var seleccion = alasql("\
-			SELECT \
-				e.RBD, \
-				e.NOM_RBD, \
-				p.Proyecto, \
-				p.Sigla_Proyecto, \
-				b.status, \
-				b.observacion, \
-				p.Anho_Convocatoria \
-			FROM \
-				EE e, seleccion b, proyectos p \
-			WHERE \
-				e.RBD = b.RBD AND \
-				b.Sigla_Proyecto = p.Sigla_Proyecto AND \
-				b.Anho_Convocatoria = p.Anho_Convocatoria AND \
-				b.Sigla_Proyecto = 'Tablet' \
-			GROUP BY \
-				e.RBD \
-			LIMIT 10 \
-		");
-
-		// CONSULTA POR PROYECTO 
-		//OUTER JOIN proyectos p ON b.Sigla_Proyecto = p.Sigla_Proyecto \
-		alasql('\
-			SELECT \
-				e.RBD, \
-				e.Nombre_Establecimiento, \
-				e.RUT_SOSTENEDOR, \
-				e.Region, \
-				e.Codigo_Provincia, \
-				e.Codigo_Comuna, \
-				e.Nombre_Comuna, \
-				e.Codigo_Deprov, \
-				e.Nombre_Deprov, \
-				e.Codigo_Dependencia, \
-				e.Codigo_Dependencia2, \
-				e.RURAL, \
-				e.LATITUD, \
-				e.LONGITUD, \
-				e.Convenio_PIE, \
-				e.Presenta_Matricula, \
-				e.ESTADO, \
-				b.Sigla_Proyecto, \
-				p.Proyecto, \
-				b.status, \
-				b.observacion, \
-				b.Anho_Convocatoria \
-			FROM seleccion b, proyectos p \
-			JOIN EE e USING b.RBD \
-			WHERE \
-				p.Sigla_Proyecto = b.Sigla_Proyecto AND \
-				b.Sigla_Proyecto = "Tablet" \
-			GROUP BY \
-				e.RBD, \
-				e.Nombre_Establecimiento, \
-				e.RUT_SOSTENEDOR, \
-				e.Region, \
-				e.Codigo_Provincia, \
-				e.Codigo_Comuna, \
-				e.Nombre_Comuna, \
-				e.Codigo_Deprov, \
-				e.Nombre_Deprov, \
-				e.Codigo_Dependencia, \
-				e.Codigo_Dependencia2, \
-				e.RURAL, \
-				e.LATITUD, \
-				e.LONGITUD, \
-				e.Convenio_PIE, \
-				e.Presenta_Matricula, \
-				e.ESTADO, \
-				b.Sigla_Proyecto, \
-				p.Proyecto \
-			');
-		*/
-
-		//console.log(proyectos);
-
-		// Tercera consulta: Metadata
-		// var mdata = alasql("\
-		// 	SELECT \
-		// 		m.RBD, \
-		// 		m.Sigla_Proyecto, \
-		// 		m.Anho_Convocatoria, \
-		// 		ARRAY({ \
-		// 			Clave:m.Clave, \
-		// 			Valor:m.Valor \
-		// 		}) as [metadata] \
-		// 	FROM \
-		// 		metadata m, \
-		// 		seleccion s \
-		// 	WHERE \
-		// 		s.RBD = m.RBD AND \
-		// 		s.Sigla_Proyecto = m.Sigla_Proyecto AND \
-		// 		s.Anho_Convocatoria = m.Anho_Convocatoria AND \
-		// 		s.RBD = "+RBD_consulta+" \
-		// 	GROUP BY \
-		// 		m.RBD, \
-		// 		m.Sigla_Proyecto, \
-		// 		m.Anho_Convocatoria \
-		// ");
-		var mdata = alasql("\
-			SELECT \
-				m.RBD, \
-				m.Sigla_Proyecto, \
-				m.Anho_Convocatoria, \
-				ARRAY({ \
-					Clave:m.Clave, \
-					Valor:m.Valor \
-				}) as [metadata] \
-			FROM \
-				metadata m \
-			WHERE \
-				m.RBD = "+RBD_consulta+" \
-			GROUP BY \
-				m.RBD, \
-				m.Sigla_Proyecto, \
-				m.Anho_Convocatoria \
-		");
-		//console.log(mdata);
-
-		// Junto ambas consultas en un sólo objeto (sólo si hay metadata)
-		if(mdata[0].RBD != undefined){
-			for(i=0;i<proyectos.length;i++){
-				for(j=0;j<proyectos[i].convocatorias.length;j++){
-					// variables a usar en la búsqueda
-					eme = "";
-					proyecto_actual = proyectos[i].Sigla_Proyecto;
-					anho_convocatoria_actual = proyectos[i].convocatorias[j].Anho_Convocatoria;
-
-					//console.log({"Año":anho_convocatoria_actual,"Proyecto":proyecto_actual});
-					// busco
-					eme = alasql("SEARCH / * WHERE(Anho_Convocatoria="+anho_convocatoria_actual+" AND Sigla_Proyecto='"+proyecto_actual+"') FROM ?",[mdata]);
-					// guardo
-					if(eme.length > 0)
-						proyectos[i].convocatorias[j]["metadata"] = eme[0].metadata;
+				RBD_consulta = $("#RBD").val();
+				if(RBD_consulta == ""){
+					$("#consultar i").remove();
+					return false;
 				}
-			}
-		}
-		//console.log(proyectos);
-		//console.log(JSON.stringify(proyectos));
 
-		// Se imprime
-		$("#render_proyectos").remove();
-		$("#render_tabla").remove();
-		// chequeo si hay proyectos y imprimo
-		if(proyectos[0].Proyecto != undefined){
-			// Encabezado
-			$("#output").append('<h1>Proyectos <div class="btn-group float-right" id="vista" role="group" aria-label="vista"><button type="button" class="btn btn-secondary active" id="ver_grupo"><i class="fa fa-th" aria-hidden="true"></i></button><button type="button" class="btn btn-secondary" id="ver_tabla"><i class="fa fa-table" aria-hidden="true"></i></button></div></h1>');
+				//## 1. Consulto por el EE
+				var data_EE = alasql('SELECT * FROM EE where RBD='+RBD_consulta);
+				// Si el EE no existe, lanzo un error y salgo
+				if(data_EE.length==0){
+					$("#output").empty();
+					$("#output").append('<div class="alert alert-danger" id="render_fichaEE" role="alert"><strong>Error!</strong> La consulta no arrojó resultados.</div>');
+					$("#consultar i").remove();
+					return false;			
+				}
 
-			$("#output").append('<div class="card-columns" id="render_proyectos"></div>');
-			$("#output").append('<div class="" id="render_tabla"></div>');
+				// Imprimo la ficha del EE
+				var source = $("#fichaEE").html();
+				var template = Handlebars.compile(source);
+				var html = template(data_EE[0]);
+				$("#output").empty();
+				$("#output").append(html);
+
+				//## 2. Consulto los proyectos relacionados con el EE
+				var proyectos = alasql("\
+					SELECT \
+						p.Proyecto, \
+						p.Sigla_Proyecto, \
+						ARRAY({ \
+							status:b.status, \
+							observacion:b.observacion, \
+							Anho_Convocatoria:p.Anho_Convocatoria, \
+							EE_Invitados:p.EE_Invitados, \
+							EE_Seleccionados:p.EE_Seleccionados, \
+							Descripcion_Beneficio:p.Descripcion_Beneficio \
+						}) AS convocatorias \
+					FROM \
+						seleccion b, proyectos p \
+					WHERE \
+						b.Sigla_Proyecto = p.Sigla_Proyecto AND \
+						b.Anho_Convocatoria = p.Anho_Convocatoria AND \
+						b.RBD = "+RBD_consulta+" \
+					GROUP BY \
+						p.Proyecto, \
+						p.Sigla_Proyecto\
+				");
+				//console.log(proyectos);
+
+
+				//## 3. Traigo la metadata del EE en cada proyecto
+				var mdata = alasql("\
+					SELECT \
+						m.RBD, \
+						m.Sigla_Proyecto, \
+						m.Anho_Convocatoria, \
+						ARRAY({ \
+							Clave:m.Clave, \
+							Valor:m.Valor \
+						}) as [metadata] \
+					FROM \
+						metadata m \
+					WHERE \
+						m.RBD = "+RBD_consulta+" \
+					GROUP BY \
+						m.RBD, \
+						m.Sigla_Proyecto, \
+						m.Anho_Convocatoria \
+				");
+				//console.log(mdata);
+
+				// Junto ambas consultas en un sólo objeto (sólo si hay metadata)
+				if(mdata[0].RBD != undefined){
+					for(i=0;i<proyectos.length;i++){
+						for(j=0;j<proyectos[i].convocatorias.length;j++){
+							// variables a usar en la búsqueda
+							eme = "";
+							proyecto_actual = proyectos[i].Sigla_Proyecto;
+							anho_convocatoria_actual = proyectos[i].convocatorias[j].Anho_Convocatoria;
+
+							//console.log({"Año":anho_convocatoria_actual,"Proyecto":proyecto_actual});
+							// busco
+							eme = alasql("SEARCH / * WHERE(Anho_Convocatoria="+anho_convocatoria_actual+" AND Sigla_Proyecto='"+proyecto_actual+"') FROM ?",[mdata]);
+							// guardo
+							if(eme.length > 0)
+								proyectos[i].convocatorias[j]["metadata"] = eme[0].metadata;
+						}
+					}
+				}
+				//console.log(proyectos);
+				//console.log(JSON.stringify(proyectos));
+
+				// Elimino lo que haya actualmente
+				$("#render_proyectos").remove();
+				$("#render_tabla").remove();
+				// chequeo si hay proyectos e imprimo
+				if(proyectos[0].Proyecto != undefined){
+					// Encabezado
+					$("#output").append('<h1>Proyectos <div class="btn-group float-right" id="vista" role="group" aria-label="vista"><button type="button" class="btn btn-secondary active" id="ver_grupo"><i class="fa fa-th" aria-hidden="true"></i></button><button type="button" class="btn btn-secondary" id="ver_tabla"><i class="fa fa-table" aria-hidden="true"></i></button></div></h1>');
+
+					$("#output").append('<div class="card-columns" id="render_proyectos"></div>');
+					$("#output").append('<div class="" id="render_tabla"></div>');
+					
+					// Fichas x proyecto
+					var source = $("#fichaProyecto").html();
+					var template = Handlebars.compile(source);
+					for(i=0;i<proyectos.length;i++){
+						var html = template(proyectos[i]);
+						$("#render_proyectos").append(html);
+					}
+					// Tabla con data
+					var source = $("#tablaCobertura").html();
+					var template = Handlebars.compile(source);
+					//console.log(proyectos);
+					var html = template({proy:proyectos});
+					$("#render_tabla").append(html);
+					$("#render_tabla").hide();
+
+				}else{
+					$("#output").append('<div class="alert alert-warning" role="alert">No hay proyectos asociados al establecimiento.</div>');
+				}
+				// escondo el panel de búsqueda
+				$("#consultar i").remove();
+				$("#consultaBlock").collapse('hide');
+
+
+			break; /* </Consulta x EE> */
 			
-			// Fichas x proyecto
-			var source = $("#fichaProyecto").html();
-			var template = Handlebars.compile(source);
-			for(i=0;i<proyectos.length;i++){
-				var html = template(proyectos[i]);
-				$("#render_proyectos").append(html);
-			}
-			// Tabla con data
-			var source = $("#tablaCobertura").html();
-			var template = Handlebars.compile(source);
-			//console.log(proyectos);
-			var html = template({proy:proyectos});
-			$("#render_tabla").append(html);
-			$("#render_tabla").hide();
+			case "tabProyecto": /* <Consulta x Proyecto> */
+				Proyecto_consulta = $("#selectProyecto").val(); //console.log(Proyecto_consulta);
+				convocatorias_consulta = $("#selectConvocatoria").val(); //console.log(convocatorias_consulta);
+				
+				var convocatorias;
+				if(convocatorias_consulta != null){	
+					for(i=0;i<=convocatorias_consulta.length;i++){ 
+						convocatorias += convocatorias_consulta;
+						if(i != convocatorias_consulta.length) convocatorias += ",";
+					} 
+				} console.log(convocatorias);
 
-		}else{
-			$("#output").append('<div class="alert alert-warning" role="alert">No hay proyectos asociados al establecimiento.</div>');
+				if(Proyecto_consulta.length==0){
+					$("#output").empty();
+					$("#output").append('<div class="alert alert-danger" id="render_fichaEE" role="alert"><strong>Error!</strong> Debes elegir un proyecto.</div>');
+					$("#consultar i").remove();
+					return false;			
+				}
+
+				//## 1. Consulto...
+				var consultaProyecto = alasql('\
+					SELECT \
+						b.RBD, \
+						b.status, \
+						e.Nombre_Establecimiento \
+					FROM seleccion b, EE e \
+					WHERE \
+						b.Sigla_Proyecto = "'+Proyecto_consulta+'" AND \
+						'+ (convocatorias != null ? "b.Anho_Convocatoria IN("+convocatorias+") AND " : "") +'\
+						b.RBD = e.RBD \
+					'); console.log(consultaProyecto);
+
+			break; /* </Consulta x Proyecto> */
 		}
-		// escondo el panel de búsqueda
-		$("#consultar i").remove();
-		$("#consultaBlock").collapse('hide');
-	});
-	// ! Consulta por RBD
+		
+	}); // ! Consulta
 
 	// Formularios
 	$("#formConsulta").submit( function(e){ 
@@ -608,6 +512,7 @@ $(function() {
 				$('#selectConvocatoria').multiselect({
 					buttonContainer: '<div class="btn-group" />',
 					buttonClass: 'btn btn-secondary',
+					nonSelectedText: 'Todas', 
 					templates: {
 						li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>'
 					}
